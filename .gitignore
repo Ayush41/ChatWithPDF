@@ -1,4 +1,19 @@
-# ignore virtual environment folder
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Environment
 venv/
 .env
-# requirements.txt
+
+# FAISS Index
+faiss_index/
+
+# Streamlit
+.streamlit/
+
+# Misc
+.DS_Store
