@@ -10,7 +10,9 @@ from langchain.prompts import PromptTemplate
 from langchain.chains.question_answering import load_qa_chain
 from dotenv import load_dotenv
 
-from io import BytesIO
+# from io import BytesIO
+
+
 
 
 st.set_page_config(page_title="Chat With One or More PDFs")
@@ -21,14 +23,39 @@ genai.configure(api_key=os.getenv("Google_API_KEY"))
 
 
 from io import BytesIO
-
+# from io import BytesIO
 def getPdfText(pdf_docs):
     text = ""
     for pdf in pdf_docs:
-        pdf_reader = PdfReader(pdf)
-        for page in pdf_reader.pages:
-            text += page.extract_text()
+        # Check if pdf is an UploadedFile, which has a read() method
+        if hasattr(pdf, 'read'):
+            pdf_reader = PdfReader(BytesIO(pdf.read()))  # Read the content as bytes and wrap it in BytesIO
+            for page in pdf_reader.pages:
+                text += page.extract_text()
+        else:
+            # Handle the case where pdf is already in bytes
+            pdf_reader = PdfReader(BytesIO(pdf))
+            for page in pdf_reader.pages:
+                text += page.extract_text()
     return text
+
+# def getPdfText(pdf_docs):
+#     text = ""
+#     for pdf in pdf_docs:
+#         # Wrap the bytes in a BytesIO object
+#         pdf_reader = PdfReader(BytesIO(pdf.read()))  
+#         for page in pdf_reader.pages:
+#             text += page.extract_text()
+#     return text
+
+
+# def getPdfText(pdf_docs):
+#     text = ""
+#     for pdf in pdf_docs:
+#         pdf_reader = PdfReader(pdf)
+#         for page in pdf_reader.pages:
+#             text += page.extract_text()
+#     return text
 
 
 # def getPdfText(pdf_docs):
@@ -100,7 +127,7 @@ def main(): #streamlit app UI part
     # st.set_page_config(page_title="Chat With One or More PDFs")
     # st.set_page_config(page_title="Chat With One or More PDFs")
 
-    st.header("Chat with PDF using Gemini Pro")
+    st.header("Chat with PDF using Gemini Pro!!")
 
     user_question = st.text_input("Ask question from the PDF files")
 
