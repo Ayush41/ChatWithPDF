@@ -20,12 +20,26 @@ def getPdfText(pdf_docs):
     text = ""
     for pdf in pdf_docs:
         try:
-            pdf_reader = PdfReader(BytesIO(pdf.read()))  # Read the content as bytes and wrap it in BytesIO
+            pdf_reader = PdfReader(BytesIO(pdf.read()))
             for page in pdf_reader.pages:
-                text += page.extract_text() or ""
+                page_text = page.extract_text() or ""
+                st.write(f"Extracted text: {page_text[:500]}")  # Show the first 500 characters for inspection
+                text += page_text
         except Exception as e:
             st.error(f"Error reading PDF: {e}")
     return text
+
+
+# def getPdfText(pdf_docs):
+#     text = ""
+#     for pdf in pdf_docs:
+#         try:
+#             pdf_reader = PdfReader(BytesIO(pdf.read()))  # Read the content as bytes and wrap it in BytesIO
+#             for page in pdf_reader.pages:
+#                 text += page.extract_text() or ""
+#         except Exception as e:
+#             st.error(f"Error reading PDF: {e}")
+#     return text
 
 def getTextChunks(text):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
@@ -36,7 +50,7 @@ def get_vector_store(text_chunks):
     # embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding")
     # embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-1.5-flash-latest")
     # embeddings = GoogleGenerativeAIEmbeddings(model="gemini-1.5-flash-latest")/
-    embeddings = GoogleGenerativeAIEmbeddings(model="gemini-1.5-flash-latest")
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
 
     vector_store = FAISS.from_texts(text_chunks, embedding=embeddings)
     vector_store.save_local("faiss_index")
@@ -44,24 +58,30 @@ def get_vector_store(text_chunks):
 
 def get_conversational_chain():
     Prompt_Template = """ 
-    Answer the question as detailed as possible from the provided context, make sure to provide all the details, if the answer is not in
-    provided context just say, "You're Stupid & answer is not available in the context", don't provide the wrong answer\n\n
-    Context:\n {context}?\n
-    Question: \n{question}\n
+Answer the question as detailed as possible based on the provided context. If the context does not contain the information, simply respond with "You're Stupid & Answer not available in the context". Do not fabricate an answer.\n\n
+Context:\n {context}\n
+Question: \n{question}\n
+Answer:
+"""
 
-    Answer:
-""" 
+#     Prompt_Template = """ 
+#     Answer the question as detailed as possible from the provided context, make sure to provide all the details, if the answer is not in
+#     provided context just say, "You're Stupid! answer is not available in the context", don't provide the wrong answer\n\n
+#     Context:\n {context}?\n
+#     Question: \n{question}\n
+
+#     Answer:
+# """ 
     # model = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.3)
     # model = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.3)
-    model = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.3)
+    model = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.3)
 
     prompt = PromptTemplate(template=Prompt_Template, input_variables=["context", "question"])
     chain = load_qa_chain(model, chain_type="stuff", prompt=prompt)
     return chain
 
 def user_input(user_question):
-    # embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-1.5-flash-latest")
-    embeddings = GoogleGenerativeAIEmbeddings(model="gemini-1.5-flash-latest")
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
     try:
         new_db = FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
         docs = new_db.similarity_search(user_question)
@@ -70,17 +90,17 @@ def user_input(user_question):
             {
                 "input_documents": docs, "question": user_question
             }, return_only_outputs=True)
-        st.write("Reply: ", response["output_text"])
+        st.write("Response:", response)  # Print the entire response object
+        st.write("Reply: ", response.get("output_text", "No output text found"))
     except ValueError as e:
         st.error(f"Error loading FAISS index: {e}")
-    except GoogleGenerativeAIError as e:
-        st.error(f"Error with Google Generative AI: {e}")
     except Exception as e:
         st.error(f"Unexpected error: {e}")
 
 
 # def user_input(user_question):
-#     embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-1.5-flash-latest")
+#     # embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-1.5-flash-latest")
+#     embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
 #     try:
 #         new_db = FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
 #         docs = new_db.similarity_search(user_question)
@@ -92,17 +112,10 @@ def user_input(user_question):
 #         st.write("Reply: ", response["output_text"])
 #     except ValueError as e:
 #         st.error(f"Error loading FAISS index: {e}")
-
-# def user_input(user_question):
-#     embeddings = GoogleGenerativeAIEmbeddings(model="model/embedding-001")
-#     new_db = FAISS.load_local("faiss_index", embeddings)
-#     docs = new_db.similarity_search(user_question)
-#     chain = get_conversational_chain()
-#     response = chain(
-#         {
-#             "input_documents": docs, "question": user_question
-#         }, return_only_outputs=True)
-#     st.write("Reply: ", response["output_text"])
+#     except GoogleGenerativeAIError as e:
+#         st.error(f"Error with Google Generative AI: {e}")
+#     except Exception as e:
+#         st.error(f"Unexpected error: {e}")
 
 def main():
     st.title("Chat with Pdf")
