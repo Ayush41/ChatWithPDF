@@ -1,0 +1,4 @@
+# ignore virtual environment folder
+venv/
+.env
+# requirements.txt
