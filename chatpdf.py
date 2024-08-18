@@ -4,7 +4,9 @@ from PyPDF2 import PdfReader
 import google.generativeai as genai
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
-from langchain.vectorstores import FAISS
+# from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
+
 from langchain.prompts import PromptTemplate
 from langchain.chains.question_answering import load_qa_chain
 from dotenv import load_dotenv
@@ -90,7 +92,7 @@ def user_input(user_question):
             {
                 "input_documents": docs, "question": user_question
             }, return_only_outputs=True)
-        st.write("Response:", response)  # Print the entire response object
+        # st.write("Response:", response)  # Print the entire response object
         st.write("Reply: ", response.get("output_text", "No output text found"))
     except ValueError as e:
         st.error(f"Error loading FAISS index: {e}")
