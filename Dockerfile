@@ -11,7 +11,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Install additional package
-RUN pip install --no-cache-dir langchain-community
+# RUN pip install --no-cache-dir langchain-community
 
 # Copy the application code
 COPY . .
