@@ -1,8 +1,32 @@
-﻿# ChatWithPDF
+# ConversePDF
 
-THIS IS A CHAT WITH PDF WEB APP CREATED USING STREAMLIT FOR UI AND PYTHON FOR THE  LOGICS
+**ConversePDF** is an advanced tool that enables you to interact with your PDF documents through a user-friendly interface. Built using Streamlit, Python, Gemini API, Langchain, and Generative AI, ConversePDF allows you to chat with PDFs, make notes, and ask questions about their content.
 
-ConversePDF App link :- https://conversepdf.streamlit.app
+ConversePDF link 🔗 :- https://conversepdf.streamlit.app
+
+## Features
+
+- **Chat with PDFs**: Engage in conversations with your PDFs and get detailed answers based on their content.
+- **Make Notes**: Annotate and highlight important sections of your PDFs.
+- **Ask Questions**: Quickly find specific information within your PDFs by asking questions.
+- **Free Access**: Enjoy all features at no cost.
+
+## Technologies Used
+
+- **Streamlit**: Framework for creating interactive web applications in Python.
+- **Python**: Programming language used for development.
+- **Gemini API**: Provides generative AI capabilities.
+- **Langchain**: Framework for building applications with language models.
+- **Generative AI**: Powers chat and question-answering functionalities.
+
+## Getting Started
+
+To get started with ConversePDF, follow these steps:
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/your-username/conversepdf.git
+   cd conversepdf
 
 # DEMO
 ![Screenshot 2024-08-18 150955](https://github.com/user-attachments/assets/ad531d43-0876-4421-993e-268dcdbf2ff6)
